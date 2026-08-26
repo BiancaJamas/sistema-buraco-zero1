@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
 
 app = Flask(__name__)
+app.secret_key = 'chave_secreta_buraco_zero'  # Necessário para controlar o login por sessão
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -94,11 +95,30 @@ def painel():
     conn.close()
     return render_template('painel.html', denuncias=denuncias, ranking_bairros=ranking_bairros)
 
+# --- ROTAS DE AUTENTICAÇÃO E ADMINISTRAÇÃO ---
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    erro = None
+    if request.method == 'POST':
+        senha_digitada = request.form.get('senha')
+        if senha_digitada == 'admin123':
+            session['admin_logado'] = True
+            return redirect(url_for('admin'))
+        else:
+            erro = 'Senha incorreta. Tente novamente.'
+    return render_template('login.html', erro=erro)
+
+@app.route('/logout')
+def logout():
+    session.pop('admin_logado', None)
+    return redirect(url_for('login'))
+
 @app.route('/admin')
 def admin():
-    senha = request.args.get('senha')
-    if senha != 'admin123':
-        return "Acesso negado. Senha incorreta ou ausente.", 403
+    # Protege a rota: se não estiver logado, redireciona para a tela de login
+    if not session.get('admin_logado'):
+        return redirect(url_for('login'))
 
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
@@ -110,8 +130,8 @@ def admin():
 
 @app.route('/admin/atualizar/<int:id>', methods=['POST'])
 def atualizar_status(id):
-    senha = request.args.get('senha')
-    if senha != 'admin123':
+    # Protege a ação de atualizar: se não estiver logado, barra o acesso
+    if not session.get('admin_logado'):
         return "Acesso negado", 403
         
     novo_status = request.form.get('status')
@@ -122,7 +142,9 @@ def atualizar_status(id):
     conn.commit()
     conn.close()
     
-    return redirect(url_for('admin', senha=senha))
+    return redirect(url_for('admin'))
+
+# ---------------------------------------------
 
 @app.route('/api/denuncias', methods=['GET'])
 def api_denuncias():
