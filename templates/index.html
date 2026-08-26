@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buraco Zero - Guarulhos</title>
+    <style>
+        :root { --primary: #004080; --primary-dark: #002b55; --accent: #0056b3; --bg: #f0f4f8; --card-bg: #ffffff; --text: #333333; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: var(--primary); color: white; padding: 50px 20px; text-align: center; border-bottom: 4px solid #002b55; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header h1 { margin: 0 0 10px 0; font-size: 2.2rem; font-weight: 700; }
+        header p { margin: 0; color: #d0e1fd; font-size: 1.1rem; }
+        .container { max-width: 700px; margin: -25px auto 40px auto; padding: 40px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; position: relative; z-index: 10; border-top: 4px solid var(--accent); }
+        h2 { color: var(--primary); margin-top: 0; font-size: 1.5rem; }
+        p.descricao { color: #555555; line-height: 1.6; margin-bottom: 30px; font-size: 1rem; }
+        .botoes-grupo { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: white; padding: 12px 26px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 0.95rem; transition: background 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn:hover { background: var(--primary-dark); }
+        .btn-alt { background: #007bff; }
+        .btn-alt:hover { background: #0056b3; }
+        footer { margin-top: auto; text-align: center; padding: 20px; color: #666666; font-size: 0.85rem; background: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚧 Sistema Buraco Zero</h1>
+        <p>Monitoramento Cidadão de Vias Públicas para a Prefeitura de Guarulhos</p>
+    </header>
+    
+    <div class="container">
+        <h2>Faça a sua parte pela infraestrutura urbana</h2>
+        <p class="descricao">Ajude a fiscalizar as vias asfálticas de Guarulhos. Registre ocorrências de buracos nas ruas e acompanhe as melhorias da cidade em tempo real de forma transparente.</p>
+        
+        <div class="botoes-grupo">
+            <a href="/denuncia" class="btn">📝 Cadastrar Nova Ocorrência</a>
+            <a href="/painel" class="btn btn-alt">📊 Ver Painel Público e Mapa</a>
+        </div>
+    </div>
+
+    <footer>
+        Prefeitura Municipal de Guarulhos &copy; 2026 - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

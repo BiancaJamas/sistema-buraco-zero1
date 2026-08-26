@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buraco Zero - Nova Denúncia</title>
+    <style>
+        :root { --primary: #004080; --primary-dark: #002b55; --accent: #0056b3; --bg: #f0f4f8; --card-bg: #ffffff; --text: #333333; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; color: var(--text); }
+        header { background-color: var(--primary); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+        .btn-voltar { background: rgba(255,255,255,0.15); color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+        .btn-voltar:hover { background: rgba(255,255,255,0.3); }
+        
+        .container { max-width: 650px; margin: 30px auto; background: var(--card-bg); padding: 35px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 4px solid var(--accent); }
+        
+        .secao-titulo { display: flex; align-items: center; gap: 8px; background: #e2e8f0; padding: 10px 14px; margin-top: 25px; margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--primary); border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .secao-titulo:first-of-type { margin-top: 0; }
+        
+        label { display: block; margin-top: 14px; font-weight: 600; font-size: 0.9rem; color: #444444; }
+        input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; color: var(--text); background: #f8fafc; transition: border-color 0.2s; }
+        input[type="text"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 2px rgba(0,86,179,0.15); }
+        
+        input[type="file"] { margin-top: 6px; font-size: 0.9rem; color: #555555; }
+        
+        #campo-outro-bairro { display: none; margin-top: 10px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .termo-box { background: #fff8e1; border: 1px solid #ffe082; padding: 15px; border-radius: 4px; margin-top: 25px; display: flex; align-items: flex-start; gap: 12px; }
+        .termo-box input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+        .termo-box label { margin-top: 0; font-size: 0.85rem; font-weight: normal; color: #795548; line-height: 1.5; cursor: pointer; }
+        
+        button[type="submit"] { background: var(--accent); color: white; border: none; padding: 12px; margin-top: 25px; width: 100%; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button[type="submit"]:hover { background: var(--primary-dark); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 Registrar Nova Ocorrência</h1>
+        <a href="/" class="btn-voltar">← Voltar</a>
+    </header>
+    <div class="container">
+        <form action="/denuncia" method="POST" enctype="multipart/form-data">
+            
+            <div class="secao-titulo">👤 1. Dados do Cidadão</div>
+            <label for="nome">Nome Completo:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva">
+
+            <label for="cpf">CPF (Sigiloso / Uso restrito):</label>
+            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+
+            <div class="secao-titulo">📍 2. Localização Exata do Problema</div>
+            
+            <!-- Endereço da rua e número -->
+            <label for="localizacao">Endereço do Ocorrido (Nome da Rua e Número):</label>
+            <input type="text" id="localizacao" name="localizacao" required placeholder="Ex: Avenida Principal, 500">
+
+            <!-- Campo de CEP com o ID necessário para a API -->
+            <label for="input-cep">CEP:</label>
+            <input type="text" id="input-cep" name="cep" placeholder="Ex: 07100-000" maxlength="9">
+
+            <!-- Seleção do Bairro -->
+            <label for="select-bairro">Bairros em Guarulhos:</label>
+            <select name="bairro" id="select-bairro" required onchange="verificarOutroBairro(this)">
+                <option value="">Selecione o bairro...</option>
+                <option value="Centro">Centro</option>
+                <option value="Gopoúva">Gopoúva</option>
+                <option value="Vila Augusta">Vila Augusta</option>
+                <option value="Vila Galvão">Vila Galvão</option>
+                <option value="Torres Tibagy">Torres Tibagy</option>
+                <option value="Macedo">Macedo</option>
+                <option value="Bela Vista">Bela Vista</option>
+                <option value="Bom Clima">Bom Clima</option>
+                <option value="Jardim Tranquilidade">Jardim Tranquilidade</option>
+                <option value="Vila Fátima">Vila Fátima</option>
+                <option value="Pimentas">Pimentas</option>
+                <option value="Jardim Bela Vista (Pimentas)">Jardim Bela Vista (Pimentas)</option>
+                <option value="Parque Jurema">Parque Jurema</option>
+                <option value="Parque Alvorada">Parque Alvorada</option>
+                <option value="Vila Paraíso">Vila Paraíso</option>
+                <option value="Cumbica">Cumbica</option>
+                <option value="Cidade Industrial Satélite">Cidade Industrial Satélite</option>
+                <option value="Vila Nova Cumbica">Vila Nova Cumbica</option>
+                <option value="Parque Uirapuru">Parque Uirapuru</option>
+                <option value="Bonsucesso">Bonsucesso</option>
+                <option value="Água Chata">Água Chata</option>
+                <option value="Scaffid">Scaffid</option>
+                <option value="Taboão">Taboão</option>
+                <option value="Vila Rio de Janeiro">Vila Rio de Janeiro</option>
+                <option value="Morros">Morros</option>
+                <option value="Fortaleza">Fortaleza</option>
+                <option value="São João">São João</option>
+                <option value="Inocoop">Inocoop</option>
+                <option value="Cabuçu">Cabuçu</option>
+                <option value="Monte Carmelo">Monte Carmelo</option>
+                <option value="Palmital">Palmital</option>
+                <option value="Outro Bairro">Outro Bairro (Digitar manualmente)</option>
+            </select>
+
+            <!-- Campo dinâmico caso escolha 'Outro Bairro' -->
+            <div id="campo-outro-bairro">
+                <label for="input-outro-bairro" style="color: var(--accent);">Qual é o nome do bairro?</label>
+                <input type="text" id="input-outro-bairro" name="outro_bairro" placeholder="Digite o nome do bairro aqui">
+            </div>
+
+            <label for="descricao">Descrição detalhada do problema:</label>
+            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o tamanho do buraco e o risco no local..."></textarea>
+
+            <label for="foto">Foto do local (Evidência opcional):</label>
+            <input type="file" id="foto" name="foto" accept="image/*">
+
+            <div class="termo-box">
+                <input type="checkbox" id="aceite_termos" name="aceite_termos" required>
+                <label for="aceite_termos">
+                    Declaro que as informações aqui prestadas são verdadeiras e estou ciente de que o envio de <strong>falsas denúncias</strong> constitui crime, sujeito às penalidades e implicações criminais previstas em lei.
+                </label>
+            </div>
+
+            <input type="hidden" name="latitude" value="-23.4628">
+            <input type="hidden" name="longitude" value="-46.5333">
+
+            <button type="submit">Enviar Denúncia com Segurança</button>
+        </form>
+    </div>
+
+    <!-- Scripts com a API do ViaCEP e lógica de bairros já integradas -->
+    <script>
+        // Função para buscar o CEP via API pública do ViaCEP
+        document.getElementById('input-cep').addEventListener('blur', function() {
+            let cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            // Preenche o campo de endereço automaticamente com a rua retornada
+                            document.querySelector('input[name="localizacao"]').value = data.logradouro + ", ";
+                            
+                            // Seleciona o bairro automaticamente se ele estiver na lista
+                            let selectBairro = document.getElementById('select-bairro');
+                            if (selectBairro) {
+                                for (let i = 0; i < selectBairro.options.length; i++) {
+                                    if (selectBairro.options[i].text.toLowerCase() === data.bairro.toLowerCase()) {
+                                        selectBairro.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            alert("CEP não encontrado.");
+                        }
+                    })
+                    .catch(error => console.log('Erro ao buscar CEP:', error));
+            }
+        });
+
+        // Função para alternar o campo de outro bairro
+        function verificarOutroBairro(select) {
+            var campoOutro = document.getElementById('campo-outro-bairro');
+            var inputOutro = document.getElementById('input-outro-bairro');
+            
+            if (select.value === 'Outro Bairro') {
+                campoOutro.style.display = 'block';
+                inputOutro.required = true;
+            } else {
+                campoOutro.style.display = 'none';
+                inputOutro.required = false;
+                inputOutro.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
