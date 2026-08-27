@@ -1,7 +1,7 @@
 # sistema-buraco-zero
 
 ## 📋 Sobre o Projeto
-O **Sistema Buraco Zero** é uma aplicação web desenvolvida como parte do Projeto Integrador da UNIVESP. O objetivo do sistema é facilitar a comunicação entre os cidadãos e a administração pública, permitindo o registro de ocorrências urbanas (como buracos em vias públicas), acompanhamento de status e gestão administrativa.
+O **Sistema Buraco Zero** é uma aplicação web desenvolvida como parte do Projeto Integrador II da UNIVESP. O objetivo do sistema é facilitar a comunicação entre os cidadãos e a administração pública, permitindo o registro de ocorrências urbanas (como buracos em vias públicas), acompanhamento de status e gestão administrativa.
 
 ## 🚀 Funcionalidades
 * **Cadastro de Ocorrências:** Permite ao cidadão enviar relato com foto, descrição, localização e coordenadas.
