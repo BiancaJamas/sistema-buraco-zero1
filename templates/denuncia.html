@@ -37,31 +37,32 @@
 <body>
     <header>
         <h1>📝 Registrar Nova Ocorrência</h1>
-        <a href="/" class="btn-voltar">← Voltar</a>
+        <a href="/" class="btn-voltar" aria-label="Voltar para a página principal">← Voltar</a>
     </header>
     <div class="container">
         <form action="/denuncia" method="POST" enctype="multipart/form-data">
             
-            <div class="secao-titulo">👤 1. Dados do Cidadão</div>
+            <div class="secao-titulo" aria-hidden="true">👤 1. Dados do Cidadão</div>
+            
             <label for="nome">Nome Completo:</label>
-            <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva">
+            <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva" aria-label="Nome Completo">
 
             <label for="cpf">CPF (Sigiloso / Uso restrito):</label>
-            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00" aria-label="CPF, dado sigiloso e de uso restrito">
 
-            <div class="secao-titulo">📍 2. Localização Exata do Problema</div>
+            <div class="secao-titulo" aria-hidden="true">📍 2. Localização Exata do Problema</div>
             
             <!-- Endereço da rua e número -->
             <label for="localizacao">Endereço do Ocorrido (Nome da Rua e Número):</label>
-            <input type="text" id="localizacao" name="localizacao" required placeholder="Ex: Avenida Principal, 500">
+            <input type="text" id="localizacao" name="localizacao" required placeholder="Ex: Avenida Principal, 500" aria-label="Endereço do Ocorrido, Nome da Rua e Número">
 
             <!-- Campo de CEP com o ID necessário para a API -->
             <label for="input-cep">CEP:</label>
-            <input type="text" id="input-cep" name="cep" placeholder="Ex: 07100-000" maxlength="9">
+            <input type="text" id="input-cep" name="cep" placeholder="Ex: 07100-000" maxlength="9" aria-label="Código de Endereçamento Postal, CEP">
 
             <!-- Seleção do Bairro -->
-            <label for="select-bairro">Bairros em Guarulhos:</label>
-            <select name="bairro" id="select-bairro" required onchange="verificarOutroBairro(this)">
+            <label for="select-bairro">Bairros:</label>
+            <select name="bairro" id="select-bairro" required onchange="verificarOutroBairro(this)" aria-label="Selecione o bairro">
                 <option value="">Selecione o bairro...</option>
                 <option value="Centro">Centro</option>
                 <option value="Gopoúva">Gopoúva</option>
@@ -100,17 +101,17 @@
             <!-- Campo dinâmico caso escolha 'Outro Bairro' -->
             <div id="campo-outro-bairro">
                 <label for="input-outro-bairro" style="color: var(--accent);">Qual é o nome do bairro?</label>
-                <input type="text" id="input-outro-bairro" name="outro_bairro" placeholder="Digite o nome do bairro aqui">
+                <input type="text" id="input-outro-bairro" name="outro_bairro" placeholder="Digite o nome do bairro aqui" aria-label="Digite o nome do outro bairro manualmente">
             </div>
 
             <label for="descricao">Descrição detalhada do problema:</label>
-            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o tamanho do buraco e o risco no local..."></textarea>
+            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o tamanho do buraco e o risco no local..." aria-label="Descrição detalhada do problema"></textarea>
 
             <label for="foto">Foto do local (Evidência opcional):</label>
-            <input type="file" id="foto" name="foto" accept="image/*">
+            <input type="file" id="foto" name="foto" accept="image/*" aria-label="Enviar Foto do local, evidência opcional">
 
             <div class="termo-box">
-                <input type="checkbox" id="aceite_termos" name="aceite_termos" required>
+                <input type="checkbox" id="aceite_termos" name="aceite_termos" required aria-label="Concordo com os termos de veracidade das informações">
                 <label for="aceite_termos">
                     Declaro que as informações aqui prestadas são verdadeiras e estou ciente de que o envio de <strong>falsas denúncias</strong> constitui crime, sujeito às penalidades e implicações criminais previstas em lei.
                 </label>
@@ -123,9 +124,7 @@
         </form>
     </div>
 
-    <!-- Scripts com a API do ViaCEP e lógica de bairros já integradas -->
     <script>
-        // Função para buscar o CEP via API pública do ViaCEP
         document.getElementById('input-cep').addEventListener('blur', function() {
             let cep = this.value.replace(/\D/g, '');
             if (cep.length === 8) {
@@ -133,10 +132,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (!data.erro) {
-                            // Preenche o campo de endereço automaticamente com a rua retornada
                             document.querySelector('input[name="localizacao"]').value = data.logradouro + ", ";
-                            
-                            // Seleciona o bairro automaticamente se ele estiver na lista
                             let selectBairro = document.getElementById('select-bairro');
                             if (selectBairro) {
                                 for (let i = 0; i < selectBairro.options.length; i++) {
@@ -154,7 +150,6 @@
             }
         });
 
-        // Função para alternar o campo de outro bairro
         function verificarOutroBairro(select) {
             var campoOutro = document.getElementById('campo-outro-bairro');
             var inputOutro = document.getElementById('input-outro-bairro');

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatos de Reparos - Admin</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { color: #004080; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.9rem; }
+        th { background-color: #004080; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu de Abas Fixo -->
+        <div style="background-color: #004080; padding: 15px 20px; border-radius: 6px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <a href="{{ url_for('admin_ocorrencias') }}" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.1);">📍 Novas Ocorrências</a>
+                <a href="{{ url_for('admin_painel') }}" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.1);">📊 Painel de Gestão</a>
+                <a href="{{ url_for('admin_reparos') }}" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.3);">🛠️ Relatos de Reparos</a>
+            </div>
+            <div>
+                <a href="{{ url_for('logout') }}" style="color: #ffcccc; text-decoration: none; font-weight: bold;">Sair da Conta</a>
+            </div>
+        </div>
+
+        <h2>🛠️ Relatos de Reparos / Melhorias</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Localização / Endereço</th>
+                    <th>Bairro</th>
+                    <th>Descrição da Melhoria</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in reparos %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['localizacao'] }}</td>
+                    <td>{{ item['bairro'] }}</td>
+                    <td>{{ item['descricao'] }}</td>
+                    <td>{{ item['status'] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px;">Nenhum reparo relatado até o momento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -32,14 +32,14 @@
 <body>
     <header>
         <h1>📊 Painel Público de Transparência - Guarulhos</h1>
-        <a href="/" class="btn-voltar">← Voltar ao Início</a>
+        <a href="/" class="btn-voltar" aria-label="Voltar para a página inicial">← Voltar ao Início</a>
     </header>
     
     <div class="container">
         <!-- Ranking de Bairros -->
         <div class="card">
             <h2>📍 Ocorrências por Bairro</h2>
-            <ul style="list-style-type: none; padding: 0; margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+            <ul aria-label="Lista de ocorrências divididas por bairro" style="list-style-type: none; padding: 0; margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
                 {% for item in ranking_bairros %}
                 <li style="padding: 12px 15px; background: #f8fafc; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #cbd5e1;">
                     <span style="font-weight: 600; color: #333333;">{{ item.bairro }}</span>
@@ -55,7 +55,7 @@
         <div class="card">
             <h2>📋 Lista Pública de Solicitações</h2>
             <div style="overflow-x: auto;">
-                <table>
+                <table aria-label="Tabela de solicitações cadastradas">
                     <thead>
                         <tr>
                             <th>Protocolo</th>
@@ -73,9 +73,9 @@
                             <td><span style="font-weight: 600; color: #444444;">{{ item.bairro }}</span></td>
                             <td style="color: #666666;">{{ item.descricao }}</td>
                             <td>
-                                {% if item.status == 'Pendente' %}<span class="badge-pendente">⏳ {{ item.status }}</span>
-                                {% elif item.status == 'Em Andamento' %}<span class="badge-andamento">🔄 {{ item.status }}</span>
-                                {% else %}<span class="badge-concluido">✅ {{ item.status }}</span>{% endif %}
+                                {% if item.status == 'Pendente' %}<span class="badge-pendente" aria-label="Status Pendente">⏳ {{ item.status }}</span>
+                                {% elif item.status == 'Em Andamento' %}<span class="badge-andamento" aria-label="Status Em Andamento">🔄 {{ item.status }}</span>
+                                {% else %}<span class="badge-concluido" aria-label="Status Concluído">✅ {{ item.status }}</span>{% endif %}
                             </td>
                         </tr>
                         {% else %}
@@ -89,7 +89,7 @@
         <!-- Mapa Interativo -->
         <div class="card">
             <h2>🗺️ Mapa Interativo de Ocorrências</h2>
-            <div id="mapa-ocorrencias"></div>
+            <div id="mapa-ocorrencias" role="region" aria-label="Mapa interativo com a localização das ocorrências cadastradas"></div>
         </div>
     </div>
 

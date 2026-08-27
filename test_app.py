@@ -18,5 +18,15 @@ class BuracoZeroTestCase(unittest.TestCase):
         response = self.app.get('/denuncia')
         self.assertEqual(response.status_code, 200)
 
+    def test_pagina_painel(self):
+        # Testa se o painel de denúncias carrega corretamente
+        response = self.app.get('/painel')
+        self.assertEqual(response.status_code, 200)
+
+    def test_pagina_login(self):
+        # Testa se a tela de login do administrador abre corretamente
+        response = self.app.get('/login')
+        self.assertEqual(response.status_code, 200)
+
 if __name__ == '__main__':
     unittest.main()
