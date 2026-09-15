@@ -1,5 +1,5 @@
 import unittest
-from app import app  # Certifique-se de que seu arquivo principal se chama app.py
+from app import app  # Importa o aplicativo principal
 
 class BuracoZeroTestCase(unittest.TestCase):
     

@@ -2,15 +2,29 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Relatos de Reparos - Admin</title>
+    <title>Gerenciar Relatos de Reparos - Admin</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
         h2 { color: #004080; margin-top: 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.9rem; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.85rem; vertical-align: middle; }
         th { background-color: #004080; color: white; }
         tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .topo-acao { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .label-status { font-size: 0.75rem; font-weight: bold; color: #555; }
+        
+        /* Botão de lixeira super discreto */
+        .btn-lixeira { background: transparent; color: #888; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-lixeira:hover { background: #f1f5f9; color: #dc3545; }
+
+        /* Estilo do botão Salvar normal e desativado */
+        .btn-status { padding: 6px 10px; border-radius: 4px; border: none; background: #28a745; color: white; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.8rem; margin-top: 6px; transition: background 0.2s; }
+        .btn-status:hover:not(:disabled) { background: #218838; }
+        .btn-status:disabled { background: #cccccc; color: #666666; cursor: not-allowed; opacity: 0.7; }
+        
+        select { padding: 4px; border-radius: 4px; border: 1px solid #ccc; width: 100%; font-size: 0.8rem; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -18,7 +32,7 @@
         <!-- Menu de Abas Fixo -->
         <div style="background-color: #004080; padding: 15px 20px; border-radius: 6px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <a href="{{ url_for('admin_ocorrencias') }}" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.1);">📍 Novas Ocorrências</a>
+                <a href="{{ url_for('admin_ocorrencias') }}" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.1);">📍 Ocorrências</a>
                 <a href="{{ url_for('admin_painel') }}" style="color: white; text-decoration: none; font-weight: bold; margin-right: 20px; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.1);">📊 Painel de Gestão</a>
                 <a href="{{ url_for('admin_reparos') }}" style="color: white; text-decoration: none; font-weight: bold; padding: 8px 12px; border-radius: 4px; background: rgba(255,255,255,0.3);">🛠️ Relatos de Reparos</a>
             </div>
@@ -27,15 +41,15 @@
             </div>
         </div>
 
-        <h2>🛠️ Relatos de Reparos / Melhorias</h2>
+        <h2>🛠️ Relatos de Reparos (Executados / Concluídos)</h2>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Localização / Endereço</th>
-                    <th>Bairro</th>
-                    <th>Descrição da Melhoria</th>
-                    <th>Status</th>
+                    <th style="width: 40px;">ID</th>
+                    <th>Endereço / Local</th>
+                    <th>Equipe / Observação</th>
+                    <th style="width: 90px;">Status</th>
+                    <th style="width: 180px;">Gerenciar Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,17 +57,42 @@
                 <tr>
                     <td>{{ item['id'] }}</td>
                     <td>{{ item['localizacao'] }}</td>
-                    <td>{{ item['bairro'] }}</td>
-                    <td>{{ item['descricao'] }}</td>
-                    <td>{{ item['status'] }}</td>
+                    <td>{{ item['observacao'] }}</td>
+                    <td><strong>{{ item['status'] }}</strong></td>
+                    <td>
+                        <!-- Formulário de Atualização do Relato -->
+                        <form action="{{ url_for('atualizar_reparo', id=item['id']) }}" method="POST">
+                            <div class="topo-acao">
+                                <span class="label-status">Status:</span>
+                                <!-- Botão de Lixeira Discreto com confirmação formal -->
+                                <button type="submit" formaction="{{ url_for('deletar_reparo', id=item['id']) }}" formmethod="POST" class="btn-lixeira" title="Excluir Relato" onclick="return confirm('Deseja realmente excluir este relato?');">🗑️</button>
+                            </div>
+                            <select name="status" class="campo-alteravel" onchange="habilitarBotao(this)">
+                                <option value="Em Andamento" {% if item['status'] == 'Em Andamento' %}selected{% endif %}>🔄 Em Andamento</option>
+                                <option value="Concluído" {% if item['status'] == 'Concluído' %}selected{% endif %}>✅ Concluído</option>
+                            </select>
+
+                            <!-- Botão Salvar começa desativado -->
+                            <button type="submit" class="btn-status" disabled>Salvar Alteração</button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px;">Nenhum reparo relatado até o momento.</td>
+                    <td colspan="5" style="text-align: center; padding: 20px;">Nenhum relato de reparo registrado até o momento.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Script JavaScript para habilitar o botão apenas quando houver alteração -->
+    <script>
+        function habilitarBotao(elementoSelect) {
+            const form = elementoSelect.closest('form');
+            const botaoSalvar = form.querySelector('.btn-status');
+            botaoSalvar.disabled = false;
+        }
+    </script>
 </body>
 </html>

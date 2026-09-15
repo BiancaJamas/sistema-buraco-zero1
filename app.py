@@ -3,12 +3,9 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 
-# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 app = Flask(__name__)
-
-# Chave secreta protegida e puxada de forma segura pelo .env
 app.secret_key = os.getenv('SECRET_KEY')
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -21,7 +18,6 @@ def init_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     
-    # Tabela de Denúncias
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS denuncias (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +29,8 @@ def init_db():
             foto_path TEXT,
             status TEXT DEFAULT 'Pendente',
             latitude REAL,
-            longitude REAL
+            longitude REAL,
+            acao_mapa TEXT DEFAULT 'padrao'
         )
     ''')
     try:
@@ -46,7 +43,11 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
-    # Tabela nova para armazenar os Reparos / Feedbacks de melhoria dos cidadãos
+    try:
+        cursor.execute('ALTER TABLE denuncias ADD COLUMN acao_mapa TEXT DEFAULT "padrao"')
+    except sqlite3.OperationalError:
+        pass
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS reparos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,7 +101,6 @@ def denuncia():
 
     return render_template('denuncia.html')
 
-# --- ROTA PARA O RELATAR REPARO ---
 @app.route('/reparo', methods=['GET', 'POST'])
 def reparo():
     if request.method == 'POST':
@@ -127,7 +127,6 @@ def reparo():
 
     return render_template('reparo.html')
 
-# --- PAINEL PÚBLICO ---
 @app.route('/painel')
 def painel():
     conn = sqlite3.connect('database.db')
@@ -142,8 +141,6 @@ def painel():
     
     conn.close()
     return render_template('painel.html', denuncias=denuncias, ranking_bairros=ranking_bairros)
-
-# --- ROTAS DE AUTENTICAÇÃO E ADMINISTRAÇÃO (COM AS 3 ABAS) ---
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -164,7 +161,6 @@ def logout():
     session.pop('admin_logado', None)
     return redirect(url_for('login'))
 
-# Aba 1: Novas Ocorrências (Gerenciamento de buracos)
 @app.route('/admin')
 @app.route('/admin/ocorrencias')
 def admin_ocorrencias():
@@ -174,12 +170,11 @@ def admin_ocorrencias():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('SELECT id, nome, cpf, localizacao, bairro, descricao, foto_path, status, latitude, longitude FROM denuncias ORDER BY id DESC')
+    cursor.execute('SELECT id, nome, cpf, localizacao, bairro, descricao, foto_path, status, latitude, longitude, acao_mapa FROM denuncias ORDER BY id DESC')
     denuncias = cursor.fetchall()
     conn.close()
     return render_template('admin_ocorrencias.html', ocorrencias=denuncias)
 
-# Aba 2: Painel de Controle e Gestão
 @app.route('/admin/painel')
 def admin_painel():
     if not session.get('admin_logado'):
@@ -196,7 +191,6 @@ def admin_painel():
 
     return render_template('admin_painel.html', total_denuncias=total_denuncias, total_reparos=total_reparos)
 
-# Aba 3: Relatos de Reparos
 @app.route('/admin/reparos')
 def admin_reparos():
     if not session.get('admin_logado'):
@@ -216,23 +210,64 @@ def atualizar_status(id):
         return "Acesso negado", 403
         
     novo_status = request.form.get('status')
+    acao_mapa = request.form.get('acao_mapa')
     
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute("UPDATE denuncias SET status = ? WHERE id = ?", (novo_status, id))
+    cursor.execute("UPDATE denuncias SET status = ?, acao_mapa = ? WHERE id = ?", (novo_status, acao_mapa, id))
     conn.commit()
     conn.close()
     
     return redirect(url_for('admin_ocorrencias'))
 
-# ---------------------------------------------
+@app.route('/admin/atualizar_reparo/<int:id>', methods=['POST'])
+def atualizar_reparo(id):
+    if not session.get('admin_logado'):
+        return "Acesso negado", 403
+        
+    novo_status = request.form.get('status')
+    
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("UPDATE reparos SET status = ? WHERE id = ?", (novo_status, id))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('admin_reparos'))
+
+# Rotas de Exclusão (Deletar)
+@app.route('/admin/deletar_ocorrencia/<int:id>', methods=['POST'])
+def deletar_ocorrencia(id):
+    if not session.get('admin_logado'):
+        return "Acesso negado", 403
+        
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM denuncias WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('admin_ocorrencias'))
+
+@app.route('/admin/deletar_reparo/<int:id>', methods=['POST'])
+def deletar_reparo(id):
+    if not session.get('admin_logado'):
+        return "Acesso negado", 403
+        
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM reparos WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('admin_reparos'))
 
 @app.route('/api/denuncias', methods=['GET'])
 def api_denuncias():
     try:
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT id, nome, localizacao, bairro, descricao, status, latitude, longitude FROM denuncias')
+        cursor.execute('SELECT id, nome, localizacao, bairro, descricao, status, latitude, longitude, acao_mapa FROM denuncias')
         registros = cursor.fetchall()
         conn.close()
 
@@ -246,7 +281,8 @@ def api_denuncias():
                 "descricao": reg[4],
                 "status": reg[5],
                 "latitude": reg[6],
-                "longitude": reg[7]
+                "longitude": reg[7],
+                "acao_mapa": reg[8] if reg[8] else "padrao"
             })
 
         return jsonify(lista_denuncias), 200
