@@ -18,6 +18,7 @@ def init_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     
+    # Tabela de Denúncias / Ocorrências
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS denuncias (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,24 +34,14 @@ def init_db():
             acao_mapa TEXT DEFAULT 'padrao'
         )
     ''')
-    try:
-        cursor.execute('ALTER TABLE denuncias ADD COLUMN latitude REAL')
-    except sqlite3.OperationalError:
-        pass
-        
-    try:
-        cursor.execute('ALTER TABLE denuncias ADD COLUMN longitude REAL')
-    except sqlite3.OperationalError:
-        pass
-
-    try:
-        cursor.execute('ALTER TABLE denuncias ADD COLUMN acao_mapa TEXT DEFAULT "padrao"')
-    except sqlite3.OperationalError:
-        pass
-
+    
+    # Tabela de Reparos (Com a coluna cep incluída)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS reparos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT,
+            cpf TEXT,
+            cep TEXT,
             localizacao TEXT NOT NULL,
             bairro TEXT NOT NULL,
             descricao TEXT NOT NULL,
@@ -58,6 +49,37 @@ def init_db():
             status TEXT DEFAULT 'Aguardando Validação'
         )
     ''')
+
+    # Ajustes de colunas caso as tabelas sejam antigas
+    for tabela in ['denuncias', 'reparos']:
+        try:
+            cursor.execute(f'ALTER TABLE {tabela} ADD COLUMN latitude REAL')
+        except sqlite3.OperationalError:
+            pass
+            
+        try:
+            cursor.execute(f'ALTER TABLE {tabela} ADD COLUMN longitude REAL')
+        except sqlite3.OperationalError:
+            pass
+
+    try:
+        cursor.execute('ALTER TABLE denuncias ADD COLUMN acao_mapa TEXT DEFAULT "padrao"')
+    except sqlite3.OperationalError:
+        pass
+
+    # Garante colunas adicionais em bases de reparos antigas
+    try:
+        cursor.execute('ALTER TABLE reparos ADD COLUMN nome TEXT')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE reparos ADD COLUMN cpf TEXT')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE reparos ADD COLUMN cep TEXT')
+    except sqlite3.OperationalError:
+        pass
 
     conn.commit()
     conn.close()
@@ -104,6 +126,9 @@ def denuncia():
 @app.route('/reparo', methods=['GET', 'POST'])
 def reparo():
     if request.method == 'POST':
+        nome = request.form.get('nome')
+        cpf = request.form.get('cpf')
+        cep = request.form.get('cep')
         localizacao = request.form.get('localizacao')
         bairro = request.form.get('bairro')
         descricao = request.form.get('descricao')
@@ -117,13 +142,13 @@ def reparo():
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO reparos (localizacao, bairro, descricao, foto_path)
-            VALUES (?, ?, ?, ?)
-        ''', (localizacao, bairro, descricao, foto_path))
+            INSERT INTO reparos (nome, cpf, cep, localizacao, bairro, descricao, foto_path)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (nome, cpf, cep, localizacao, bairro, descricao, foto_path))
         conn.commit()
         conn.close()
 
-        return redirect(url_for('index'))
+        return redirect(url_for('admin_reparos'))
 
     return render_template('reparo.html')
 
@@ -199,7 +224,7 @@ def admin_reparos():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('SELECT id, localizacao, bairro, descricao, foto_path, status FROM reparos ORDER BY id DESC')
+    cursor.execute('SELECT id, nome, cpf, cep, localizacao, bairro, descricao, foto_path, status FROM reparos ORDER BY id DESC')
     reparos = cursor.fetchall()
     conn.close()
     return render_template('admin_reparos.html', reparos=reparos)
@@ -235,7 +260,6 @@ def atualizar_reparo(id):
     
     return redirect(url_for('admin_reparos'))
 
-# Rotas de Exclusão (Deletar)
 @app.route('/admin/deletar_ocorrencia/<int:id>', methods=['POST'])
 def deletar_ocorrencia(id):
     if not session.get('admin_logado'):

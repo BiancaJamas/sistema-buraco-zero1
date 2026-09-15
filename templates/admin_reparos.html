@@ -5,7 +5,7 @@
     <title>Gerenciar Relatos de Reparos - Admin</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .container { max-width: 1250px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
         h2 { color: #004080; margin-top: 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.85rem; vertical-align: middle; }
@@ -46,6 +46,9 @@
             <thead>
                 <tr>
                     <th style="width: 40px;">ID</th>
+                    <th style="width: 110px;">Nome</th>
+                    <th style="width: 100px;">CPF</th>
+                    <th style="width: 90px;">CEP</th>
                     <th>Endereço / Local</th>
                     <th>Equipe / Observação</th>
                     <th style="width: 90px;">Status</th>
@@ -56,8 +59,11 @@
                 {% for item in reparos %}
                 <tr>
                     <td>{{ item['id'] }}</td>
+                    <td>{{ item['nome'] }}</td>
+                    <td>{{ item['cpf'] }}</td>
+                    <td>{{ item['cep'] }}</td>
                     <td>{{ item['localizacao'] }}</td>
-                    <td>{{ item['observacao'] }}</td>
+                    <td>{{ item['descricao'] }}</td>
                     <td><strong>{{ item['status'] }}</strong></td>
                     <td>
                         <!-- Formulário de Atualização do Relato -->
@@ -79,7 +85,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px;">Nenhum relato de reparo registrado até o momento.</td>
+                    <td colspan="8" style="text-align: center; padding: 20px;">Nenhum relato de reparo registrado até o momento.</td>
                 </tr>
                 {% endfor %}
             </tbody>

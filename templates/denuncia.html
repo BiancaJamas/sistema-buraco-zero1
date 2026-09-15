@@ -106,7 +106,7 @@
             </div>
 
             <label for="descricao">Descrição detalhada do problema:</label>
-            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o tamanho do buraco e o risco no local..." aria-label="Descrição detalhada do problema"></textarea>
+            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva a situação do local e os riscos para o tráfego..." aria-label="Descrição detalhada do problema"></textarea>
 
             <label for="foto">Foto do local (opcional):</label>
             <input type="file" id="foto" name="foto" accept="image/*" aria-label="Enviar Foto do local, opcional">
@@ -222,7 +222,7 @@
                             document.getElementById('input-latitude').value = data[0].lat;
                             document.getElementById('input-longitude').value = data[0].lon;
                         } else {
-                            let enderecoLivre = `${ruaENumero}, ${bairro ? bairro + ',' : ''} Guarulhos, SP, Brasil`;
+                            let enderecoLivre = `${ruaENumero},${bairro ? bairro + ',' : ''} Guarulhos, SP, Brasil`;
                             let urlLivre = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(enderecoLivre)}`;
                             
                             fetch(urlLivre)
