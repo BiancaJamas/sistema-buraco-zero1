@@ -3,150 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buraco Zero - Relatar Reparo</title>
+    <title>Buraco Zero - Novo Relato</title>
     <style>
         :root { --primary: #004080; --primary-dark: #002b55; --accent: #0056b3; --bg: #f0f4f8; --card-bg: #ffffff; --text: #333333; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: var(--primary); color: white; padding: 25px 20px; text-align: center; border-bottom: 4px solid #002b55; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; color: var(--text); }
+        header { background-color: var(--primary); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+        .btn-voltar { background: rgba(255,255,255,0.15); color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+        .btn-voltar:hover { background: rgba(255,255,255,0.3); }
         
-        .container { max-width: 650px; margin: 30px auto; padding: 30px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .container { max-width: 650px; margin: 30px auto; background: var(--card-bg); padding: 35px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 4px solid var(--accent); }
         
-        form { display: flex; flex-direction: column; gap: 20px; text-align: left; }
+        .secao-titulo { display: flex; align-items: center; gap: 8px; background: #e2e8f0; padding: 10px 14px; margin-top: 25px; margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--primary); border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .secao-titulo:first-of-type { margin-top: 0; }
         
-        .secao-titulo {
-            background-color: #e6f0fa;
-            color: var(--primary);
-            padding: 10px 15px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            border-left: 4px solid var(--accent);
-            border-radius: 2px;
-            margin-bottom: 5px;
-        }
+        label { display: block; margin-top: 14px; font-weight: 600; font-size: 0.9rem; color: #444444; }
+        input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; color: var(--text); background: #f8fafc; transition: border-color 0.2s; }
+        input[type="text"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 2px rgba(0,86,179,0.15); }
+        
+        input[type="file"] { margin-top: 6px; font-size: 0.9rem; color: #555555; }
+        
+        #campo-outro-bairro { display: none; margin-top: 10px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .campo-grupo { display: flex; flex-direction: column; gap: 6px; }
+        /* Caixa de aviso com destaque vermelho */
+        .termo-box { background: #fdf2f2; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px; margin-top: 25px; display: flex; align-items: flex-start; gap: 12px; }
+        .termo-box input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+        .termo-box label { margin-top: 0; font-size: 0.85rem; font-weight: normal; color: #555555; line-height: 1.5; cursor: pointer; text-align: justify; }
         
-        label { font-weight: 600; font-size: 0.88rem; color: #444; }
-        
-        input[type="text"], select, textarea, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; box-sizing: border-box; }
-        
-        input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 5px rgba(0,86,179,0.3); }
-
-        /* Caixa de aviso com borda e fundo vermelhos */
-        .aviso-legal { background-color: #fdf2f2; border-left: 4px solid #dc3545; padding: 12px; font-size: 0.82rem; color: #555; text-align: justify; border-radius: 4px; }
-        .aviso-legal label { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-weight: normal; }
-
-        .btn-enviar { background: var(--accent); color: white; padding: 12px; border: none; border-radius: 4px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-top: 5px; }
-        .btn-enviar:hover { background: var(--primary-dark); }
-
-        .voltar { display: inline-block; margin-top: 20px; color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-        .voltar:hover { text-decoration: underline; }
-
-        footer { margin-top: auto; text-align: center; padding: 20px; color: #666666; font-size: 0.85rem; background: #e2e8f0; }
+        button[type="submit"] { background: var(--accent); color: white; border: none; padding: 12px; margin-top: 25px; width: 100%; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button[type="submit"]:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body>
     <header>
-        <h1>Relatar Reparo / Melhoria</h1>
+        <h1>📝 Enviar Relato de Reparo</h1>
+        <a href="/" class="btn-voltar" aria-label="Voltar para a página principal">← Voltar</a>
     </header>
-    
     <div class="container">
-        <form action="{{ url_for('reparo') }}" method="POST" enctype="multipart/form-data">
+        <form action="/denuncia" method="POST" enctype="multipart/form-data">
             
-            <!-- SEÇÃO 1: DADOS DO CIDADÃO -->
-            <div class="secao-titulo">👤 1. DADOS DO CIDADÃO</div>
+            <div class="secao-titulo" aria-hidden="true">👤 1. Dados do Cidadão</div>
             
-            <div class="campo-grupo">
-                <label for="nome">Nome Completo:</label>
-                <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva">
+            <label for="nome">Nome Completo:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva" aria-label="Nome Completo">
+
+            <label for="cpf">CPF (Sigiloso / Uso restrito):</label>
+            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00" maxlength="14" aria-label="CPF, dado sigiloso e de uso restrito">
+
+            <div class="secao-titulo" aria-hidden="true">📍 2. Localização Exata do Problema</div>
+            
+            <label for="localizacao">Endereço do Ocorrido (Nome da Rua e Número):</label>
+            <input type="text" id="localizacao" name="localizacao" required placeholder="Ex: Avenida Principal, 500" aria-label="Endereço do Ocorrido, Nome da Rua e Número" onchange="buscarCoordenadasGPS()">
+
+            <label for="input-cep">CEP:</label>
+            <input type="text" id="input-cep" name="cep" placeholder="Ex: 07100-000" maxlength="9" aria-label="Código de Endereçamento Postal, CEP">
+
+            <label for="select-bairro">Bairros:</label>
+            <select name="bairro" id="select-bairro" required onchange="verificarOutroBairro(this)" aria-label="Selecione o bairro">
+                <option value="">Selecione o bairro...</option>
+                <option value="Centro">Centro</option>
+                <option value="Gopoúva">Gopoúva</option>
+                <option value="Vila Augusta">Vila Augusta</option>
+                <option value="Vila Galvão">Vila Galvão</option>
+                <option value="Torres Tibagy">Torres Tibagy</option>
+                <option value="Macedo">Macedo</option>
+                <option value="Bela Vista">Bela Vista</option>
+                <option value="Bom Clima">Bom Clima</option>
+                <option value="Jardim Tranquilidade">Jardim Tranquilidade</option>
+                <option value="Vila Fátima">Vila Fátima</option>
+                <option value="Pimentas">Pimentas</option>
+                <option value="Jardim Bela Vista (Pimentas)">Jardim Bela Vista (Pimentas)</option>
+                <option value="Parque Jurema">Parque Jurema</option>
+                <option value="Parque Alvorada">Parque Alvorada</option>
+                <option value="Vila Paraíso">Vila Paraíso</option>
+                <option value="Cumbica">Cumbica</option>
+                <option value="Cidade Industrial Satélite">Cidade Industrial Satélite</option>
+                <option value="Vila Nova Cumbica">Vila Nova Cumbica</option>
+                <option value="Parque Uirapuru">Parque Uirapuru</option>
+                <option value="Bonsucesso">Bonsucesso</option>
+                <option value="Água Chata">Água Chata</option>
+                <option value="Scaffid">Scaffid</option>
+                <option value="Taboão">Taboão</option>
+                <option value="Vila Rio de Janeiro">Vila Rio de Janeiro</option>
+                <option value="Morros">Morros</option>
+                <option value="Fortaleza">Fortaleza</option>
+                <option value="São João">São João</option>
+                <option value="Inocoop">Inocoop</option>
+                <option value="Cabuçu">Cabuçu</option>
+                <option value="Monte Carmelo">Monte Carmelo</option>
+                <option value="Palmital">Palmital</option>
+                <option value="Outro Bairro">Outro Bairro (Digitar manualmente)</option>
+            </select>
+
+            <div id="campo-outro-bairro">
+                <label for="input-outro-bairro" style="color: var(--accent);">Qual é o nome do bairro?</label>
+                <input type="text" id="input-outro-bairro" name="outro_bairro" placeholder="Digite o nome do bairro aqui" aria-label="Digite o nome do outro bairro manualmente" onchange="buscarCoordenadasGPS()">
             </div>
 
-            <div class="campo-grupo">
-                <label for="cpf">CPF (Sigiloso / Uso restrito):</label>
-                <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00" maxlength="14">
-            </div>
+            <label for="descricao">Descrição detalhada do problema:</label>
+            <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva o tamanho do buraco e o risco no local..." aria-label="Descrição detalhada do problema"></textarea>
 
-            <!-- SEÇÃO 2: LOCALIZAÇÃO DO REPARO -->
-            <div class="secao-titulo" style="margin-top: 10px;">📍 2. LOCALIZAÇÃO EXATA DO REPARO</div>
+            <label for="foto">Foto do local (opcional):</label>
+            <input type="file" id="foto" name="foto" accept="image/*" aria-label="Enviar Foto do local, opcional">
 
-            <!-- Endereço da rua e número primeiro -->
-            <div class="campo-grupo">
-                <label for="localizacao">Endereço do Reparo (Rua e Número):</label>
-                <input type="text" id="localizacao" name="localizacao" required placeholder="Ex: Avenida Principal, 500">
-            </div>
-
-            <!-- CEP embaixo para preenchimento manual -->
-            <div class="campo-grupo">
-                <label for="cep">CEP:</label>
-                <input type="text" id="cep" name="cep" required placeholder="Ex: 07100-000" maxlength="9">
-            </div>
-
-            <div class="campo-grupo">
-                <label for="bairro">Bairro:</label>
-                <select id="bairro-select" name="bairro_select" required onchange="verificarOutroBairro(this)">
-                    <option value="">Selecione o bairro...</option>
-                    <option value="Cabuçu">Cabuçu</option>
-                    <option value="Cecap">Cecap</option>
-                    <option value="Centro">Centro</option>
-                    <option value="Cocaia">Cocaia</option>
-                    <option value="Bonsucesso">Bonsucesso</option>
-                    <option value="Cumbica">Cumbica</option>
-                    <option value="Gopoúva">Gopoúva</option>
-                    <option value="Inocoop">Inocoop</option>
-                    <option value="Itapegica">Itapegica</option>
-                    <option value="Jardim Presidente Dutra">Jardim Presidente Dutra</option>
-                    <option value="Jardim Tranquilidade">Jardim Tranquilidade</option>
-                    <option value="Maia">Maia</option>
-                    <option value="Paraventi">Paraventi</option>
-                    <option value="Pimentas">Pimentas</option>
-                    <option value="Ponte Grande">Ponte Grande</option>
-                    <option value="Taboão">Taboão</option>
-                    <option value="Torres Tibagy">Torres Tibagy</option>
-                    <option value="Vila Augusta">Vila Augusta</option>
-                    <option value="Vila Endres">Vila Endres</option>
-                    <option value="Vila Galvão">Vila Galvão</option>
-                    <option value="Outro">Outro (Digitar manualmente)</option>
-                </select>
-                
-                <!-- Campo de texto que aparece caso selecione "Outro" -->
-                <input type="text" id="bairro-manual" name="bairro" placeholder="Digite o nome do bairro" style="display: none; margin-top: 8px;">
-            </div>
-
-            <!-- SEÇÃO 3: DESCRIÇÃO DO REPARO -->
-            <div class="secao-titulo" style="margin-top: 10px;">📝 3. DESCRIÇÃO DA MELHORIA</div>
-
-            <div class="campo-grupo">
-                <label for="descricao">Descrição detalhada do reparo realizado:</label>
-                <textarea id="descricao" name="descricao" rows="4" required placeholder="Descreva como o local ficou após a melhoria..."></textarea>
-            </div>
-
-            <div class="campo-grupo">
-                <label for="foto">Foto do local (opcional):</label>
-                <input type="file" id="foto" name="foto" accept="image/*">
-            </div>
-
-            <!-- Caixa de verificação do aviso legal (com destaque vermelho) -->
-            <div class="aviso-legal">
-                <label>
-                    <input type="checkbox" required style="margin-top: 3px;">
-                    <span>Declaro que as informações aqui prestadas são verdadeiras e estou ciente de que o envio de falsas informações constitui crime sujeito a penalidades e implicações criminais previstas em lei.</span>
+            <div class="termo-box">
+                <input type="checkbox" id="aceite_termos" name="aceite_termos" required aria-label="Concordo com os termos de veracidade das informações">
+                <label for="aceite_termos">
+                    Declaro que as informações aqui prestadas são verdadeiras e estou ciente de que o envio de <strong>falsas denúncias</strong> constitui crime, sujeito às penalidades e implicações criminais previstas em lei.
                 </label>
             </div>
 
-            <!-- Botão limpo e direto -->
-            <button type="submit" class="btn-enviar">Enviar Relato</button>
+            <input type="hidden" id="input-latitude" name="latitude" value="-23.4628">
+            <input type="hidden" id="input-longitude" name="longitude" value="-46.5333">
+
+            <button type="submit">Enviar Relato</button>
         </form>
-        
-        <a href="{{ url_for('index') }}" class="voltar">&larr; Voltar para a Página Inicial</a>
     </div>
 
-    <footer>
-        Prefeitura Municipal de Guarulhos &copy; 2026 - Todos os direitos reservados.
+    <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.85rem; border-top: 1px solid #cbd5e1; margin-top: 40px;">
+        Prefeitura Municipal de Guarulhos &copy; 2026 - Todos os direitos reservados
     </footer>
 
     <script>
-        // Máscara automática para o CPF (000.000.000-00)
         document.getElementById('cpf').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\D/g, "");
             if (value.length > 9) {
@@ -159,8 +138,7 @@
             e.target.value = value;
         });
 
-        // Máscara automática para o CEP (00000-000)
-        document.getElementById('cep').addEventListener('input', function (e) {
+        document.getElementById('input-cep').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\D/g, "");
             if (value.length > 5) {
                 value = value.replace(/^(\d{5})(\d{1,3}).*/, "$1-$2");
@@ -168,18 +146,88 @@
             e.target.value = value;
         });
 
+        document.getElementById('input-cep').addEventListener('blur', function() {
+            let cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.querySelector('input[name="localizacao"]').value = data.logradouro + ", ";
+                            let selectBairro = document.getElementById('select-bairro');
+                            if (selectBairro) {
+                                for (let i = 0; i < selectBairro.options.length; i++) {
+                                    if (selectBairro.options[i].text.toLowerCase() === data.bairro.toLowerCase()) {
+                                        selectBairro.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            buscarCoordenadasGPS();
+                        } else {
+                            alert("CEP não encontrado.");
+                        }
+                    })
+                    .catch(error => console.log('Erro ao buscar CEP:', error));
+            }
+        });
+
         function verificarOutroBairro(select) {
-            var inputManual = document.getElementById('bairro-manual');
-            if (select.value === 'Outro') {
-                inputManual.style.display = 'block';
-                inputManual.required = true;
-                select.removeAttribute('name'); 
-                inputManual.setAttribute('name', 'bairro');
+            var campoOutro = document.getElementById('campo-outro-bairro');
+            var inputOutro = document.getElementById('input-outro-bairro');
+            
+            if (select.value === 'Outro Bairro') {
+                campoOutro.style.display = 'block';
+                inputOutro.required = true;
             } else {
-                inputManual.style.display = 'none';
-                inputManual.required = false;
-                inputManual.removeAttribute('name');
-                select.setAttribute('name', 'bairro');
+                campoOutro.style.display = 'none';
+                inputOutro.required = false;
+                inputOutro.value = '';
+            }
+            buscarCoordenadasGPS();
+        }
+
+        function buscarCoordenadasGPS() {
+            let ruaENumero = document.getElementById('localizacao').value.trim();
+            let selectBairro = document.getElementById('select-bairro').value;
+            let outroBairro = document.getElementById('input-outro-bairro').value.trim();
+            let bairro = (selectBairro === 'Outro Bairro') ? outroBairro : selectBairro;
+
+            if (ruaENumero.length > 3) {
+                let queryParams = new URLSearchParams({
+                    format: 'json',
+                    addressdetails: 1,
+                    limit: 1,
+                    city: 'Guarulhos',
+                    state: 'São Paulo',
+                    country: 'Brazil',
+                    street: ruaENumero,
+                    ...(bairro && bairro !== 'Selecione o bairro...' && { neighbourhood: bairro })
+                });
+
+                let url = `https://nominatim.openstreetmap.org/search?${queryParams.toString()}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            document.getElementById('input-latitude').value = data[0].lat;
+                            document.getElementById('input-longitude').value = data[0].lon;
+                        } else {
+                            let enderecoLivre = `${ruaENumero}, ${bairro ? bairro + ',' : ''} Guarulhos, SP, Brasil`;
+                            let urlLivre = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(enderecoLivre)}`;
+                            
+                            fetch(urlLivre)
+                                .then(res => res.json())
+                                .then(dadosLivre => {
+                                    if (dadosLivre && dadosLivre.length > 0) {
+                                        document.getElementById('input-latitude').value = dadosLivre[0].lat;
+                                        document.getElementById('input-longitude').value = dadosLivre[0].lon;
+                                    }
+                                });
+                        }
+                    })
+                    .catch(error => console.log('Erro ao geocodificar o endereço:', error));
             }
         }
     </script>
