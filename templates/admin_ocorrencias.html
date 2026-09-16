@@ -47,8 +47,9 @@
                 <tr>
                     <th style="width: 40px;">ID</th>
                     <th style="width: 120px;">Nome</th>
-                    <th style="width: 110px;">CPF</th> <!-- Coluna de CPF adicionada -->
-                    <th>Endereço / CEP</th>
+                    <th style="width: 110px;">CPF</th>
+                    <th style="width: 90px;">CEP</th> <!-- Coluna de CEP adicionada para padronizar com reparos -->
+                    <th>Endereço / Local</th>
                     <th style="width: 100px;">Bairro</th>
                     <th>Descrição</th>
                     <th style="width: 90px;">Status</th>
@@ -60,7 +61,8 @@
                 <tr>
                     <td>{{ item['id'] }}</td>
                     <td>{{ item['nome'] }}</td>
-                    <td>{{ item['cpf'] }}</td> <!-- Exibição do CPF recuperado do banco -->
+                    <td>{{ item['cpf'] }}</td>
+                    <td>{{ item['cep'] }}</td> <!-- Exibição do CEP -->
                     <td>{{ item['localizacao'] }}</td>
                     <td>{{ item['bairro'] }}</td>
                     <td>{{ item['descricao'] }}</td>
@@ -93,7 +95,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="8" style="text-align: center; padding: 20px;">Nenhuma ocorrência registrada até o momento.</td>
+                    <td colspan="9" style="text-align: center; padding: 20px;">Nenhuma ocorrência registrada até o momento.</td>
                 </tr>
                 {% endfor %}
             </tbody>

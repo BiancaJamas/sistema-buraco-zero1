@@ -119,7 +119,8 @@ def denuncia():
         conn.commit()
         conn.close()
 
-        return redirect(url_for('painel'))
+        # CORRIGIDO: Redireciona para o index público em vez do painel público antigo
+        return redirect(url_for('index'))
 
     return render_template('denuncia.html')
 
@@ -148,7 +149,8 @@ def reparo():
         conn.commit()
         conn.close()
 
-        return redirect(url_for('admin_reparos'))
+        # CORRIGIDO: Redireciona para o index público
+        return redirect(url_for('index'))
 
     return render_template('reparo.html')
 
